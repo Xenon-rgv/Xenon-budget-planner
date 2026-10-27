@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Xenon - Intelligent Budget OS & Capital Engine</title>
+  <meta name="description" content="Sovereign offline budget operating system and personal financial analytics engine. Track capital allocation, category envelopes, and daily safe spend.">
+  <meta name="theme-color" content="#8B5CF6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Xenon">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <!-- Google Fonts: Space Grotesk & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-layout" id="appRoot">
+
+    <!-- Top Navigation Header -->
+    <header class="app-header" id="appHeader">
+      <div class="header-inner">
+        
+        <!-- Brand identity -->
+        <div class="brand-group">
+          <div class="brand-logo-wrap">
+            <img src="logo.jpg" alt="Xenon Logo" class="brand-logo-img">
+            <span class="status-pulse-dot" title="Local Sovereign Engine"></span>
+          </div>
+          <div class="brand-text">
+            <div class="brand-title-row">
+              <h1 class="brand-name">XENON</h1>
+              <span class="badge-edition">OS v1.0</span>
+            </div>
+            <p class="brand-tagline">Intelligent Capital Engine</p>
+          </div>
+        </div>
+
+        <!-- Mode Switcher: Demo Sandbox vs Real Life Budget -->
+        <div class="mode-toggle-wrap">
+          <button class="mode-btn active" id="modeDemoBtn" title="Switch to Demo Testing Sandbox">
+            <i class="fa-solid fa-flask"></i>
+            <span>Demo Mode</span>
+          </button>
+          <button class="mode-btn" id="modeRealBtn" title="Switch to Real Life Personal Budget">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Real Budget</span>
+          </button>
+        </div>
+
+        <!-- Controls: Period, Currency, Audio, Theme, Settings -->
+        <div class="header-actions">
+          
+          <!-- Currency Selector -->
+          <div class="currency-pill">
+            <select id="currencySelector" class="currency-select" title="Display Currency">
+              <option value="NGN" selected>NGN (₦)</option>
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+            </select>
+          </div>
+
+          <!-- Month Selector -->
+          <div class="month-pill" id="monthSelectorWrap">
+            <button class="icon-btn icon-btn-sm" id="prevMonthBtn" title="Previous Month" aria-label="Previous Month">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <span class="current-month-label" id="currentMonthLabel">October 2026</span>
+            <button class="icon-btn icon-btn-sm" id="nextMonthBtn" title="Next Month" aria-label="Next Month">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+
+          <!-- Audio FX -->
+          <button class="icon-btn" id="soundToggleBtn" title="Audio Feedback" aria-label="Audio feedback">
+            <i class="fa-solid fa-volume-high" id="soundOnIcon"></i>
+            <i class="fa-solid fa-volume-xmark hidden" id="soundOffIcon"></i>
+          </button>
+
+          <!-- Theme Toggle -->
+          <button class="icon-btn" id="themeToggleBtn" title="Toggle Theme" aria-label="Toggle theme">
+            <i class="fa-solid fa-sun hidden" id="sunIcon"></i>
+            <i class="fa-solid fa-moon" id="moonIcon"></i>
+          </button>
+
+          <!-- Settings & Backup -->
+          <button class="icon-btn" id="menuToggleBtn" title="Settings & Data Management" aria-label="Settings and Data">
+            <i class="fa-solid fa-sliders"></i>
+          </button>
+
+          <!-- PWA Install -->
+          <button class="btn btn-outline-xenon btn-sm hidden" id="pwaInstallBtn" aria-label="Install App">
+            <i class="fa-solid fa-download"></i>
+            <span>Install</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Environment Status Banner -->
+      <div class="env-banner" id="envBanner">
+        <div class="env-banner-inner">
+          <span class="env-status-badge" id="envStatusBadge">
+            <i class="fa-solid fa-flask"></i> Sandbox Demo
+          </span>
+          <span class="env-status-msg" id="envStatusMsg">
+            Simulated financial workspace. Test transactions, edit limits, and explore metrics safely.
+          </span>
+          <button class="btn-link env-action-btn" id="envActionBtn">Switch to Real Budget</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace Content -->
+    <main class="app-main" id="mainContent">
+
+      <!-- HERO SECTION: Financial Overview -->
+      <section class="hero-section" id="heroSection">
+        <div class="hero-card" id="balanceCard">
+          <div class="hero-glow-violet"></div>
+          <div class="hero-glow-cyan"></div>
+
+          <div class="hero-top-row">
+            <div class="balance-meta">
+              <span class="meta-label">
+                <i class="fa-solid fa-wallet"></i> Net Monthly Capital
+              </span>
+              <div class="net-balance-amount" id="netBalanceDisplay">
+                <span class="currency-symbol-display">₦</span><span id="netBalanceValue">0.00</span>
+              </div>
+            </div>
+
+            <div class="safe-spend-pill" id="safeSpendBadge">
+              <div class="safe-spend-tag">
+                <i class="fa-solid fa-calculator"></i> Daily Safe Allowance
+              </div>
+              <span class="safe-spend-val" id="safeDailySpendValue">₦0.00/day</span>
+              <span class="safe-spend-sub" id="daysRemainingLabel">31 days remaining</span>
+            </div>
+          </div>
+
+          <!-- Monthly Allocation Progress Bar -->
+          <div class="budget-meter-wrap">
+            <div class="meter-labels">
+              <span>Budget Consumption (<strong id="budgetPercentUsed">0%</strong>)</span>
+              <span id="budgetSpentRatio">₦0 / ₦0</span>
+            </div>
+            <div class="meter-bar-track">
+              <div class="meter-bar-fill" id="meterBarFill" style="width: 0%;"></div>
+            </div>
+            <div class="meter-footnote">
+              <span id="budgetStatusText">System operating within planned envelope limits.</span>
+              <button class="btn-link" id="quickEditBudgetBtn">
+                <i class="fa-solid fa-pen-to-square"></i> Configure Budget
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Primary KPI Metrics -->
+        <div class="metrics-grid">
+          <div class="metric-card metric-income">
+            <div class="metric-icon-wrap icon-income-bg">
+              <i class="fa-solid fa-arrow-down-left-long"></i>
+            </div>
+            <div class="metric-content">
+              <span class="metric-title">Total Inflow</span>
+              <span class="metric-number text-cyan" id="totalIncomeDisplay">₦0.00</span>
+              <span class="metric-sub" id="incomeTxCount">0 credits</span>
+            </div>
+          </div>
+
+          <div class="metric-card metric-expense">
+            <div class="metric-icon-wrap icon-expense-bg">
+              <i class="fa-solid fa-arrow-up-right-long"></i>
+            </div>
+            <div class="metric-content">
+              <span class="metric-title">Total Outflow</span>
+              <span class="metric-number text-coral" id="totalExpenseDisplay">₦0.00</span>
+              <span class="metric-sub" id="expenseTxCount">0 debits</span>
+            </div>
+          </div>
+
+          <div class="metric-card metric-savings">
+            <div class="metric-icon-wrap icon-savings-bg">
+              <i class="fa-solid fa-chart-pie"></i>
+            </div>
+            <div class="metric-content">
+              <span class="metric-title">Capital Retention</span>
+              <span class="metric-number text-violet" id="savingsRateDisplay">0%</span>
+              <span class="metric-sub" id="savingsAdviceText">Calculating...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RAPID RECORD STRIP -->
+      <section class="quick-presets-section" id="quickPresetsSection">
+        <div class="section-title-row">
+          <div class="section-title-wrap">
+            <i class="fa-solid fa-bolt text-cyan"></i>
+            <h2 class="section-subtitle">Rapid Entry Shortcuts</h2>
+          </div>
+          <span class="section-tip">Select to pre-populate</span>
+        </div>
+        <div class="chips-scroll">
+          <button class="preset-chip" data-category="food" data-title="Dining & Groceries" data-amount="5000">
+            <i class="fa-solid fa-utensils"></i>
+            <span class="chip-name">Groceries</span>
+            <span class="chip-cost">5,000</span>
+          </button>
+          <button class="preset-chip" data-category="transport" data-title="Transit & Commute" data-amount="3000">
+            <i class="fa-solid fa-car-side"></i>
+            <span class="chip-name">Transit</span>
+            <span class="chip-cost">3,000</span>
+          </button>
+          <button class="preset-chip" data-category="data" data-title="Telecom & Cloud Data" data-amount="6000">
+            <i class="fa-solid fa-wifi"></i>
+            <span class="chip-name">Data</span>
+            <span class="chip-cost">6,000</span>
+          </button>
+          <button class="preset-chip" data-category="utilities" data-title="Power & Grid Utility" data-amount="12000">
+            <i class="fa-solid fa-bolt-lightning"></i>
+            <span class="chip-name">Power</span>
+            <span class="chip-cost">12,000</span>
+          </button>
+          <button class="preset-chip" data-category="fuel" data-title="Fuel & Power Auxiliary" data-amount="10000">
+            <i class="fa-solid fa-gas-pump"></i>
+            <span class="chip-name">Fuel</span>
+            <span class="chip-cost">10,000</span>
+          </button>
+          <button class="preset-chip" data-category="support" data-title="Family & Welfare" data-amount="20000">
+            <i class="fa-solid fa-users"></i>
+            <span class="chip-name">Welfare</span>
+            <span class="chip-cost">20,000</span>
+          </button>
+          <button class="preset-chip" data-category="leisure" data-title="Leisure & Lifestyle" data-amount="8500">
+            <i class="fa-solid fa-martini-glass-citrus"></i>
+            <span class="chip-name">Leisure</span>
+            <span class="chip-cost">8,500</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- NAVIGATION TABS -->
+      <nav class="tabs-nav" id="tabsNav" role="tablist">
+        <button class="tab-btn active" id="tabBtnDashboard" data-tab="dashboard" role="tab" aria-selected="true">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="tab-btn" id="tabBtnTransactions" data-tab="transactions" role="tab" aria-selected="false">
+          <i class="fa-solid fa-list-check"></i>
+          <span>Transactions</span>
+          <span class="tab-count-badge" id="transactionsCountBadge">0</span>
+        </button>
+        <button class="tab-btn" id="tabBtnGoals" data-tab="goals" role="tab" aria-selected="false">
+          <i class="fa-solid fa-vault"></i>
+          <span>Capital Vaults</span>
+        </button>
+        <button class="tab-btn" id="tabBtnTools" data-tab="tools" role="tab" aria-selected="false">
+          <i class="fa-solid fa-microchip"></i>
+          <span>Calculators</span>
+        </button>
+      </nav>
+
+      <!-- TAB 1: DASHBOARD & ENVELOPES -->
+      <section class="tab-content active" id="tabViewDashboard">
+        <div class="dashboard-grid">
+
+          <!-- Left Column: Capital Breakdown & Donut Graph -->
+          <div class="dashboard-panel chart-panel">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <h3 class="panel-title">Capital Allocation Breakdown</h3>
+                <p class="panel-desc">Proportional distribution by expenditure category</p>
+              </div>
+              <span class="badge-subtle" id="chartPeriodBadge">Current Period</span>
+            </div>
+            
+            <div class="chart-container" id="chartContainer">
+              <div class="donut-chart-box">
+                <svg id="spendingDonutSvg" viewBox="0 0 240 240" class="donut-svg">
+                  <!-- Injected via JS -->
+                </svg>
+                <div class="donut-center-info">
+                  <span class="donut-center-sub">Total Disbursed</span>
+                  <span class="donut-center-total" id="donutTotalText">₦0</span>
+                </div>
+              </div>
+
+              <!-- Interactive Donut Legend -->
+              <div class="donut-legend" id="donutLegendContainer">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Intelligent Optimization Insight Card -->
+            <div class="insight-banner" id="spendingInsightCard">
+              <div class="insight-icon">
+                <i class="fa-solid fa-brain"></i>
+              </div>
+              <div class="insight-text">
+                <h4 class="insight-title" id="insightHeading">Analytics Insight</h4>
+                <p class="insight-desc" id="insightDesc">Processing transaction patterns...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Category Envelopes -->
+          <div class="dashboard-panel envelopes-panel">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <h3 class="panel-title">Active Category Envelopes</h3>
+                <p class="panel-desc">Real-time spending control caps</p>
+              </div>
+              <button class="btn btn-outline-xenon btn-sm" id="manageEnvelopesBtn">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Adjust Limits</span>
+              </button>
+            </div>
+
+            <div class="envelopes-list" id="envelopesList">
+              <!-- Envelopes injected via JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: TRANSACTIONS LIST & ADVANCED FILTERS -->
+      <section class="tab-content hidden" id="tabViewTransactions">
+        <div class="transactions-panel">
+
+          <!-- Filter Toolbar -->
+          <div class="transactions-toolbar">
+            <div class="search-input-wrap">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="txSearchInput" placeholder="Filter by description, channel, or reference tag..." autocomplete="off">
+              <button class="icon-clear hidden" id="clearSearchBtn" aria-label="Clear search">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+
+            <div class="filter-controls-row">
+              <div class="filter-select-wrap">
+                <select id="txTypeFilter" class="custom-select" aria-label="Filter movement type">
+                  <option value="all">All Capital Flows</option>
+                  <option value="expense">Outflow (Debits)</option>
+                  <option value="income">Inflow (Credits)</option>
+                </select>
+              </div>
+
+              <div class="filter-select-wrap">
+                <select id="txCategoryFilter" class="custom-select" aria-label="Filter category">
+                  <option value="all">All Categories</option>
+                  <option value="food">Dining & Groceries</option>
+                  <option value="transport">Transit & Commute</option>
+                  <option value="utilities">Power & Utilities</option>
+                  <option value="data">Data & Telecom</option>
+                  <option value="fuel">Fuel & Auxiliary Power</option>
+                  <option value="housing">Housing & Property</option>
+                  <option value="support">Family & Welfare</option>
+                  <option value="leisure">Leisure & Lifestyle</option>
+                  <option value="savings">Vault & Capital Reserve</option>
+                  <option value="salary">Compensation & Revenue</option>
+                  <option value="other">Miscellaneous</option>
+                </select>
+              </div>
+
+              <div class="filter-select-wrap">
+                <select id="txChannelFilter" class="custom-select" aria-label="Filter settlement channel">
+                  <option value="all">All Settlement Rails</option>
+                  <option value="transfer">Direct Wire / Transfer</option>
+                  <option value="fintech">Fintech / Instant Pay</option>
+                  <option value="terminal">POS Terminal</option>
+                  <option value="card">Debit / Credit Card</option>
+                  <option value="cash">Physical Cash</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transaction List Container -->
+          <div class="tx-list-container" id="txListContainer">
+            <!-- Grouped transaction cards injected via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: CAPITAL VAULTS & TARGETS -->
+      <section class="tab-content hidden" id="tabViewGoals">
+        <div class="goals-panel">
+          <div class="goals-header-bar">
+            <div>
+              <h3 class="panel-title">Capital Vaults & Target Funds</h3>
+              <p class="panel-desc">Earmark capital reserves for strategic goals, rent locks, and asset acquisition</p>
+            </div>
+            <button class="btn btn-xenon" id="newGoalModalBtn">
+              <i class="fa-solid fa-plus"></i>
+              <span>Create Vault</span>
+            </button>
+          </div>
+
+          <!-- Vaults Summary KPI -->
+          <div class="goals-summary-strip">
+            <div class="goal-sum-item">
+              <span class="sum-label">Total Vaulted Capital</span>
+              <span class="sum-val text-cyan" id="totalGoalsLockedDisplay">₦0.00</span>
+            </div>
+            <div class="goal-sum-divider"></div>
+            <div class="goal-sum-item">
+              <span class="sum-label">Aggregate Target</span>
+              <span class="sum-val" id="totalGoalsTargetDisplay">₦0.00</span>
+            </div>
+            <div class="goal-sum-divider"></div>
+            <div class="goal-sum-item">
+              <span class="sum-label">Funding Ratio</span>
+              <span class="sum-val text-violet" id="totalGoalsPercentDisplay">0%</span>
+            </div>
+          </div>
+
+          <!-- Grid of Vault Cards -->
+          <div class="goals-cards-grid" id="goalsCardsGrid">
+            <!-- Vault cards injected via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: CALCULATORS & MODELING -->
+      <section class="tab-content hidden" id="tabViewTools">
+        <div class="tools-grid">
+
+          <!-- TOOL 1: 50/30/20 Capital Allocation Engine -->
+          <div class="tool-card">
+            <div class="tool-header">
+              <div class="tool-badge-icon">
+                <i class="fa-solid fa-scale-balanced"></i>
+              </div>
+              <div>
+                <h3 class="tool-title">50/30/20 Capital Allocation Engine</h3>
+                <p class="tool-desc">Algorithmic capital distribution based on net monthly cashflow</p>
+              </div>
+            </div>
+
+            <div class="tool-form-group">
+              <label for="salaryInput" class="form-label">Monthly Net Revenue / Inflow</label>
+              <div class="input-currency-wrapper">
+                <span class="currency-prefix currency-symbol-display">₦</span>
+                <input type="number" id="salaryInput" class="form-input text-lg" placeholder="400000" min="0" step="5000" value="400000">
+              </div>
+            </div>
+
+            <div class="split-results-grid">
+              <div class="split-card split-needs">
+                <div class="split-top">
+                  <span class="split-tag">50% Essential Baseline</span>
+                  <span class="split-amt" id="splitNeedsAmt">₦200,000</span>
+                </div>
+                <p class="split-guide">Housing obligations, sustenance, routine transport, power grid, primary utilities.</p>
+              </div>
+
+              <div class="split-card split-wants">
+                <div class="split-top">
+                  <span class="split-tag">30% Discretionary & Welfare</span>
+                  <span class="split-amt" id="splitWantsAmt">₦120,000</span>
+                </div>
+                <p class="split-guide">Lifestyle comfort, social engagements, family support allocations, premium connectivity.</p>
+              </div>
+
+              <div class="split-card split-savings">
+                <div class="split-top">
+                  <span class="split-tag">20% Sovereign Capital & Vaults</span>
+                  <span class="split-amt" id="splitSavingsAmt">₦80,000</span>
+                </div>
+                <p class="split-guide">Emergency liquidity reserve (3-6 months), liquid debt-free vaults, investment capital.</p>
+              </div>
+            </div>
+
+            <button class="btn btn-outline-xenon btn-block mt-4" id="applySplitToBudgetsBtn">
+              <i class="fa-solid fa-arrows-rotate"></i>
+              <span>Apply Allocation To Active Envelopes</span>
+            </button>
+          </div>
+
+          <!-- TOOL 2: Energy & Auxiliary Utility Modeling -->
+          <div class="tool-card">
+            <div class="tool-header">
+              <div class="tool-badge-icon">
+                <i class="fa-solid fa-charging-station"></i>
+              </div>
+              <div>
+                <h3 class="tool-title">Auxiliary Energy Cost Modeling</h3>
+                <p class="tool-desc">Calculate operational expenditure of generator / decentralized fuel power</p>
+              </div>
+            </div>
+
+            <div class="gen-form-grid">
+              <div class="form-group">
+                <label for="fuelPriceInput" class="form-label">Unit Fuel Cost per Litre</label>
+                <div class="input-currency-wrapper">
+                  <span class="currency-prefix currency-symbol-display">₦</span>
+                  <input type="number" id="fuelPriceInput" class="form-input" value="1050" step="10">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="genHoursInput" class="form-label">Daily Operational Hours</label>
+                <input type="number" id="genHoursInput" class="form-input" value="6" min="1" max="24" step="1">
+              </div>
+
+              <div class="form-group">
+                <label for="genSizeSelect" class="form-label">Generator Class & Burn Rate</label>
+                <select id="genSizeSelect" class="custom-select">
+                  <option value="0.75">Compact Unit (0.9kVA - 1.5kVA) &bull; ~0.75 L/hr</option>
+                  <option value="1.2" selected>Medium Commercial (2.5kVA - 3.5kVA) &bull; ~1.2 L/hr</option>
+                  <option value="2.0">Heavy Duty (5kVA - 8kVA) &bull; ~2.0 L/hr</option>
+                  <option value="3.5">Industrial Diesel (10kVA+) &bull; ~3.5 L/hr</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="gen-estimate-results">
+              <div class="gen-res-card">
+                <span class="gen-res-label">Daily Expense</span>
+                <span class="gen-res-val text-coral" id="genDailyCost">₦7,560</span>
+                <span class="gen-res-sub" id="genDailyLitres">7.2 Litres/day</span>
+              </div>
+              <div class="gen-res-card">
+                <span class="gen-res-label">Weekly Outlay</span>
+                <span class="gen-res-val text-coral" id="genWeeklyCost">₦52,920</span>
+                <span class="gen-res-sub">7 days</span>
+              </div>
+              <div class="gen-res-card">
+                <span class="gen-res-label">Monthly Impact</span>
+                <span class="gen-res-val text-coral" id="genMonthlyCost">₦226,800</span>
+                <span class="gen-res-sub">30 days projection</span>
+              </div>
+            </div>
+
+            <div class="gen-tip-box">
+              <i class="fa-solid fa-lightbulb"></i>
+              <span><strong>Efficiency Note:</strong> Amortizing an inverter battery or solar installation against this run-rate demonstrates a payback period within 7 to 10 months.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FLOATING ACTION BUTTON (Add Transaction) -->
+    <button class="fab-btn" id="openAddTxModalBtn" title="Record Movement (Key: 'N')" aria-label="Record transaction">
+      <i class="fa-solid fa-plus"></i>
+      <span class="fab-label">Record Flow</span>
+    </button>
+
+    <!-- MODAL 1: RECORD / EDIT TRANSACTION -->
+    <div class="modal-overlay hidden" id="txModalOverlay" role="dialog" aria-modal="true" aria-labelledby="txModalTitle">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <i class="fa-solid fa-receipt modal-title-icon"></i>
+            <h3 class="modal-title" id="txModalTitle">Record Capital Flow</h3>
+          </div>
+          <button class="icon-btn" id="closeTxModalBtn" aria-label="Close dialog">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <form id="txForm" class="modal-form">
+          <input type="hidden" id="txEditId" value="">
+
+          <!-- Flow Direction Selector -->
+          <div class="type-toggle-group">
+            <button type="button" class="type-toggle-btn active-expense" id="typeExpenseBtn" data-type="expense">
+              <i class="fa-solid fa-arrow-up-right-long"></i>
+              <span>Outflow (Expense)</span>
+            </button>
+            <button type="button" class="type-toggle-btn" id="typeIncomeBtn" data-type="income">
+              <i class="fa-solid fa-arrow-down-left-long"></i>
+              <span>Inflow (Revenue)</span>
+            </button>
+          </div>
+
+          <!-- Hero Numeric Amount Input -->
+          <div class="amount-input-hero">
+            <span class="amount-hero-symbol currency-symbol-display">₦</span>
+            <input type="number" id="txAmountInput" class="amount-hero-field" placeholder="0" step="any" min="0.01" required autofocus>
+          </div>
+          <div class="amount-formatted-hint" id="txAmountFormattedPreview">₦0.00</div>
+
+          <!-- Description / Subject -->
+          <div class="form-group">
+            <label for="txTitleInput" class="form-label">Transaction Description</label>
+            <input type="text" id="txTitleInput" class="form-input" placeholder="e.g. Server hosting, Groceries, Client milestone..." required>
+          </div>
+
+          <!-- Category Selection -->
+          <div class="form-group">
+            <label class="form-label">Category Classification</label>
+            <div class="category-grid-picker" id="categoryPickerGrid">
+              <!-- Rendered via JS -->
+            </div>
+            <input type="hidden" id="txCategoryInput" value="food">
+          </div>
+
+          <!-- Settlement Channel & Date -->
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="txChannelSelect" class="form-label">Settlement Rail</label>
+              <select id="txChannelSelect" class="custom-select">
+                <option value="fintech">Fintech / Instant Pay</option>
+                <option value="transfer">Direct Bank Wire</option>
+                <option value="terminal">POS Terminal</option>
+                <option value="card">Card Payment</option>
+                <option value="cash">Physical Cash</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="txDateInput" class="form-label">Value Date</label>
+              <input type="date" id="txDateInput" class="form-input" required>
+            </div>
+          </div>
+
+          <!-- Reference Note -->
+          <div class="form-group">
+            <label for="txNoteInput" class="form-label">Reference Note / Tag (Optional)</label>
+            <input type="text" id="txNoteInput" class="form-input" placeholder="e.g. #reimbursable, #invoice-402, monthly">
+          </div>
+
+          <div class="modal-actions-row">
+            <button type="button" class="btn btn-secondary" id="cancelTxBtn">Cancel</button>
+            <button type="submit" class="btn btn-xenon btn-lg" id="saveTxBtn">Commit Entry</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 2: CONFIGURE BUDGET LIMITS -->
+    <div class="modal-overlay hidden" id="budgetModalOverlay" role="dialog" aria-modal="true" aria-labelledby="budgetModalTitle">
+      <div class="modal-sheet modal-sheet-lg">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <i class="fa-solid fa-sliders modal-title-icon"></i>
+            <h3 class="modal-title" id="budgetModalTitle">Configure Budget Envelopes</h3>
+          </div>
+          <button class="icon-btn" id="closeBudgetModalBtn" aria-label="Close dialog">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <form id="budgetForm" class="modal-form">
+          <div class="budget-total-box">
+            <label for="overallBudgetInput" class="form-label font-bold">Aggregate Monthly Spending Threshold</label>
+            <div class="input-currency-wrapper">
+              <span class="currency-prefix currency-symbol-display">₦</span>
+              <input type="number" id="overallBudgetInput" class="form-input text-lg font-bold" min="100" step="1000" required>
+            </div>
+            <p class="form-sub-hint">The master limit across all categories for the active calendar month.</p>
+          </div>
+
+          <h4 class="form-section-divider">Category Spending Envelopes</h4>
+          <div class="envelope-inputs-list" id="envelopeInputsContainer">
+            <!-- Injected via JS -->
+          </div>
+
+          <div class="modal-actions-row mt-4">
+            <button type="button" class="btn btn-secondary" id="cancelBudgetBtn">Cancel</button>
+            <button type="submit" class="btn btn-xenon btn-lg">Apply Configuration</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 3: CAPITAL VAULT CREATOR -->
+    <div class="modal-overlay hidden" id="goalModalOverlay" role="dialog" aria-modal="true" aria-labelledby="goalModalTitle">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <i class="fa-solid fa-vault modal-title-icon"></i>
+            <h3 class="modal-title" id="goalModalTitle">Create Capital Vault</h3>
+          </div>
+          <button class="icon-btn" id="closeGoalModalBtn" aria-label="Close dialog">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <form id="goalForm" class="modal-form">
+          <input type="hidden" id="goalEditId" value="">
+
+          <div class="form-group">
+            <label for="goalNameInput" class="form-label">Vault Name / Target Objective</label>
+            <input type="text" id="goalNameInput" class="form-input" placeholder="e.g. Annual Property Lease, Equipment Upgrade" required>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="goalTargetInput" class="form-label">Target Capital (<span class="currency-symbol-display">₦</span>)</label>
+              <input type="number" id="goalTargetInput" class="form-input" placeholder="500000" min="100" step="1000" required>
+            </div>
+            <div class="form-group">
+              <label for="goalCurrentInput" class="form-label">Initial Seed (<span class="currency-symbol-display">₦</span>)</label>
+              <input type="number" id="goalCurrentInput" class="form-input" placeholder="0" min="0" step="500" value="0">
+            </div>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="goalDateInput" class="form-label">Target Maturity Date</label>
+              <input type="date" id="goalDateInput" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label for="goalIconSelect" class="form-label">Vault Category Icon</label>
+              <select id="goalIconSelect" class="custom-select">
+                <option value="fa-solid fa-house">Property / Real Estate</option>
+                <option value="fa-solid fa-laptop-code">Tech & Infrastructure</option>
+                <option value="fa-solid fa-car">Vehicle & Transport</option>
+                <option value="fa-solid fa-graduation-cap">Education & Learning</option>
+                <option value="fa-solid fa-plane-departure">Travel & Mobility</option>
+                <option value="fa-solid fa-shield-halved">Emergency Stash</option>
+                <option value="fa-solid fa-chart-line">Venture & Equity</option>
+                <option value="fa-solid fa-gem">Special Milestone</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-actions-row">
+            <button type="button" class="btn btn-secondary" id="cancelGoalBtn">Cancel</button>
+            <button type="submit" class="btn btn-xenon btn-lg" id="saveGoalBtn">Lock Vault</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 4: DEPOSIT TO CAPITAL VAULT -->
+    <div class="modal-overlay hidden" id="depositModalOverlay" role="dialog" aria-modal="true" aria-labelledby="depositModalTitle">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <i class="fa-solid fa-circle-arrow-up modal-title-icon"></i>
+            <h3 class="modal-title" id="depositModalTitle">Allocate Capital to Vault</h3>
+          </div>
+          <button class="icon-btn" id="closeDepositModalBtn" aria-label="Close dialog">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <form id="depositForm" class="modal-form">
+          <input type="hidden" id="depositGoalId" value="">
+          <p class="deposit-goal-info">Funding Destination: <strong id="depositGoalNameText">Vault</strong></p>
+          <div class="form-group">
+            <label for="depositAmountInput" class="form-label">Allocation Amount (<span class="currency-symbol-display">₦</span>)</label>
+            <div class="input-currency-wrapper">
+              <span class="currency-prefix currency-symbol-display">₦</span>
+              <input type="number" id="depositAmountInput" class="form-input text-lg font-bold" placeholder="25000" min="1" step="100" required autofocus>
+            </div>
+          </div>
+
+          <div class="modal-actions-row">
+            <button type="button" class="btn btn-secondary" id="cancelDepositBtn">Cancel</button>
+            <button type="submit" class="btn btn-xenon btn-lg">Confirm Allocation</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 5: SETTINGS, DATA PERSISTENCE & REAL BUDGET ONBOARDING -->
+    <div class="modal-overlay hidden" id="menuModalOverlay" role="dialog" aria-modal="true" aria-labelledby="menuModalTitle">
+      <div class="modal-sheet">
+        <div class="modal-handle"></div>
+        <div class="modal-header">
+          <div class="modal-header-left">
+            <i class="fa-solid fa-sliders modal-title-icon"></i>
+            <h3 class="modal-title" id="menuModalTitle">Xenon Engine Settings</h3>
+          </div>
+          <button class="icon-btn" id="closeMenuModalBtn" aria-label="Close dialog">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="menu-modal-body">
+          
+          <!-- Mode Management -->
+          <div class="settings-group">
+            <h4 class="settings-group-title">Active Workspace Environment</h4>
+            <p class="settings-group-desc">Switch between testing with demo figures or managing your actual personal records.</p>
+            <div class="settings-action-buttons">
+              <button class="btn btn-outline-xenon" id="modalSwitchToRealBtn">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Switch to Real Life Budget</span>
+              </button>
+              <button class="btn btn-secondary" id="modalSwitchToDemoBtn">
+                <i class="fa-solid fa-flask"></i>
+                <span>Switch to Demo Sandbox</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Data Portability -->
+          <div class="settings-group">
+            <h4 class="settings-group-title">Sovereign Data Storage (Offline)</h4>
+            <p class="settings-group-desc">Your financial telemetry never leaves your device. Export or restore your encrypted snapshots.</p>
+            
+            <div class="settings-action-buttons">
+              <button class="btn btn-outline-xenon" id="exportJsonBtn">
+                <i class="fa-solid fa-file-code"></i>
+                <span>Export JSON Ledger Snapshot</span>
+              </button>
+              <button class="btn btn-outline-xenon" id="exportCsvBtn">
+                <i class="fa-solid fa-file-csv"></i>
+                <span>Export CSV Spreadsheet</span>
+              </button>
+              <label class="btn btn-secondary cursor-pointer" for="importJsonFileInput">
+                <i class="fa-solid fa-upload"></i>
+                <span>Import / Restore Snapshot</span>
+              </label>
+              <input type="file" id="importJsonFileInput" accept=".json" class="hidden">
+            </div>
+          </div>
+
+          <!-- Maintenance -->
+          <div class="settings-group">
+            <h4 class="settings-group-title">Workspace Maintenance</h4>
+            <div class="settings-action-buttons">
+              <button class="btn btn-secondary" id="loadDemoDataBtn">
+                <i class="fa-solid fa-rotate-right"></i>
+                <span>Re-seed Demo Sandbox</span>
+              </button>
+              <button class="btn btn-danger-outline" id="clearAllDataBtn">
+                <i class="fa-solid fa-trash-can"></i>
+                <span>Purge Active Workspace</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="settings-footer">
+            <p><strong>Xenon Financial OS</strong> &bull; Local-First Architecture</p>
+            <p class="offline-badge-text">
+              <i class="fa-solid fa-lock"></i> Zero External Tracking &bull; 100% Client-Side Privacy
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
